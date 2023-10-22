@@ -7,7 +7,6 @@ export const useD3 = (
   deps: unknown[],
 ) => {
   const ref = useRef<SVGSVGElement>(null);
-  console.log(deps);
   useEffect(() => {
     if (ref.current !== undefined) {
       renderChartFn(d3.select(ref.current as BaseType));

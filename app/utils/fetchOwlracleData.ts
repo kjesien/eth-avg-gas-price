@@ -1,20 +1,9 @@
 import useSWR from "swr";
 
+export type timeframeType = "10m" | "30m" | "1h" | "2h" | "4h" | "1d";
 interface OwlracleHistoryParameters {
   apikey: string;
-  timeframe:
-    | "10m"
-    | "30m"
-    | "1h"
-    | "2h"
-    | "4h"
-    | "1d"
-    | "10"
-    | "30"
-    | "60"
-    | "120"
-    | "240"
-    | "1440";
+  timeframe: timeframeType;
   from: string; // timestamp
   to: string; // timestamp
   candles: string; // number
@@ -45,29 +34,35 @@ export interface OwlracleGasHistoryResponse {
   candles: OwlracleGasHistoryData;
 }
 
-export const fetchOwlracleData =
-  async (): Promise<OwlracleGasHistoryResponse> => {
-    const params: Partial<OwlracleHistoryParameters> = {
-      apikey: process.env.NEXT_PUBLIC_OWLRACLE_API_KEY || "",
-      timeframe: "1h",
-      candles: "200",
-      txfee: "true",
-    };
+const getApiKey = () =>
+  (window as any).OWRACLE_API_KEY ||
+  process.env.NEXT_PUBLIC_OWLRACLE_API_KEY ||
+  "";
 
-    const res = await fetch(
-      `https://api.owlracle.info/v4/eth/history?${new URLSearchParams(params)}`,
-    );
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch data");
-    }
-
-    return res.json();
+export const fetchOwlracleData = async (
+  timeframe: timeframeType,
+): Promise<OwlracleGasHistoryResponse> => {
+  const params: Partial<OwlracleHistoryParameters> = {
+    apikey: getApiKey(),
+    timeframe: timeframe,
+    candles: "300",
+    txfee: "true",
   };
 
-export const useOwlracleData = () => {
+  const res = await fetch(
+    `https://api.owlracle.info/v4/eth/history?${new URLSearchParams(params)}`,
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+};
+
+export const useOwlracleData = (timeframe: timeframeType) => {
   return useSWR<OwlracleGasHistoryResponse>(
-    "owlracle-history-data",
-    fetchOwlracleData,
+    `owlracle-history-data-${timeframe}`,
+    () => fetchOwlracleData(timeframe),
   );
 };

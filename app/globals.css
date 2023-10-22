@@ -50,9 +50,7 @@ button {
 button:hover {
     @apply bg-opacity-90;
 }
-.btn-primary {
-    @apply bg-primary text-white;
-}
-.btn-secondary {
-    @apply bg-gray-200 text-gray-900;
+
+.axis {
+    font-size: 1em;
 }

@@ -1,3 +1,15 @@
+import { OwlracleGasHistoryResponse } from "@/app/utils/fetchOwlracleData";
+
+export const parseOwrlacleData = (
+  data: OwlracleGasHistoryResponse | undefined,
+) =>
+  data?.candles
+    .map((d) => ({
+      date: new Date(d.timestamp),
+      value: (d.txFee.low + d.txFee.high) / 2,
+    }))
+    .reverse();
+
 export const formatValue = (value: number) =>
   value.toLocaleString("en", {
     style: "currency",
